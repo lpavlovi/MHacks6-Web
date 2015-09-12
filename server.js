@@ -8,3 +8,8 @@ app.use('/bower_components', express.static(__dirname + '/bower_components'));
 var serve = app.listen((port_number || 3000), function() {
   console.log('Port: %s', serve.address().port);
 });
+
+
+app.get('/rest/test', function(req, res) {
+  res.send('TEST COMPLETE!');
+});
