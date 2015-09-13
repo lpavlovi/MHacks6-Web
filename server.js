@@ -1,15 +1,17 @@
 var app = require('express')();
-var http = require('http').Server(app);
+var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 // var http = require("http");
 var express = require('express');
 // var app = express();
-var port_number = process.env.PORT || 3000;
+// var port_number = process.env.PORT || 3000;
+var port_number = 3000;
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var bodyParser = require('body-parser');
-var url = 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s';
+var url = process.env.PORT ? 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s' : 'mongodb://localhost:27017/task_database';
 var clients = [];
+
 mongo_client.connect(url, function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -20,22 +22,19 @@ mongo_client.connect(url, function (err, db) {
     }
 });
 
+// console.log('mHacks - Port: %s', serve.address().port);
 app.use('/', express.static(__dirname + '/project'));
-app.get('/', function(res, req){
-  res.sendStatus(200);
-});
+
 app.use(bodyParser.json())
 app.set('port', port_number);
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
-var serve = http.listen((port_number), function() {
-  console.log('mHacks - Port: %s', serve.address().port);
-});
-
-io.listen(8080);
-
 io.on('connection', function(socket) {
+    console.log('socket connected! ' + socket);
     clients.push(socket);
+    socket.on('chat message', function(msg){
+      io.emit('chat message', msg);
+    });
     socket.on('event', function(data) {
       console.log(data);
     });
@@ -59,11 +58,11 @@ io.on('task_acknowledged', function (socket) {
             var description = values[1];
             var priority = values[2];
             collection.remove({name: name, description: description, priority:priority});
+            console.log('task has been acknowledged');
         }
     });
     console.log('I received a private message by ', from, ' saying ', msg);
 });
-
 app.post('/rest/tasks/new', function(req, res) {
     /*
     res.end(JSON.stringify(req.body, null, 2))
@@ -99,8 +98,8 @@ app.post('/rest/tasks/new', function(req, res) {
     res.send(msg);
 });
 
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
+http.listen((port_number), function() {
+  console.log('mHacks - Port: %s', port_number);
 });
+
+io.listen(http);
