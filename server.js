@@ -1,7 +1,9 @@
-var io = require('socket.io')(80);
-var http = require("http");
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+// var http = require("http");
 var express = require('express');
-var app = express();
+// var app = express();
 var port_number = process.env.PORT;
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -9,6 +11,7 @@ var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var url = 'mongodb://localhost:27017/task_database';
 var clients = [];
+
 mongo_client.connect(url, function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -26,9 +29,7 @@ var serve = http.listen((port_number || 3000), function() {
   console.log('Port: %s', serve.address().port);
 });
 
-io.listen(app);
 
-var socket = io.connect();
 
 app.on('connection', function(socket) {
     clients.push(socket);
@@ -40,7 +41,7 @@ app.on('connection', function(socket) {
     });
 });
 
-socket.on('task_acknowledged', function (from, msg) {
+io.on('task_acknowledged', function (socket) {
     mongo_client.connect(url, function (err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
