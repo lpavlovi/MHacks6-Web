@@ -8,6 +8,7 @@ var io = require('socket.io')(http);
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var url = 'mongodb://localhost:27017/task_database';
+var clients = [];
 
 app.use('/', express.static(__dirname + '/project'));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
@@ -19,6 +20,16 @@ var serve = http.listen((port_number || 3000), function() {
 io.listen(app);
 
 var socket = io.connect();
+
+app.on('connection', function(socket) {
+    clients.push(socket);
+    socket.on('disconnect', function() {
+        var index = clients.indexOf(socket);
+        if(index != -1) {
+            client.splice(index, 1);
+        }
+    });
+});
 
 socket.on('task_acknowledged', function (from, msg) {
     mongo_client.connect(url, function (err, db) {
@@ -41,7 +52,12 @@ app.post('/rest/tasks/new', function(req, res) {
     var description = req.body.description;
     var priority = req.body.priority;
     var msg = priority + '-' + name + '-' + description; 
-    socket.emit('new_task', msg); 
+    var randomClient;
+    // send msg to 1 random client
+    if(client.length > 0) {
+        randomClient = Math.floor(Math.random() * clients.length);
+        clients[randomClient].emit('new_task', msg);
+    }
     res.send(msg);
     mongo_client.connect(url, function (err, db) {
         if (err) {
