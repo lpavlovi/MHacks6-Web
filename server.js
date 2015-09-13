@@ -34,8 +34,11 @@ var serve = http.listen((port_number), function() {
 
 io.listen(8080);
 
-app.on('connection', function(socket) {
+io.on('connection', function(socket) {
     clients.push(socket);
+    socket.on('event', function(data) {
+      console.log(data);
+    }
     socket.on('disconnect', function() {
         var index = clients.indexOf(socket);
         if(index != -1) {
