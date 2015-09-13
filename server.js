@@ -4,11 +4,12 @@ var io = require('socket.io')(http);
 // var http = require("http");
 var express = require('express');
 // var app = express();
-var port_number = process.env.PORT;
+var port_number = process.env.PORT || 3000;
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var bodyParser = require('body-parser');
-var url = 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s';
+var url = 'mongodb://localhost:27017/task_database';
+
 var clients = [];
 // mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s
 mongo_client.connect(url, function (err, db) {
@@ -22,10 +23,14 @@ mongo_client.connect(url, function (err, db) {
 });
 
 app.use('/', express.static(__dirname + '/project'));
+app.get('/', function(res, req){
+  res.sendStatus(200);
+});
 app.use(bodyParser.json())
+app.set('port', port_number);
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
-var serve = http.listen((port_number || 3000), function() {
+var serve = http.listen((port_number), function() {
   console.log('Port: %s', serve.address().port);
 });
 
