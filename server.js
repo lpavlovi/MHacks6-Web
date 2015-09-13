@@ -1,11 +1,8 @@
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-// var http = require("http");
 var express = require('express');
-// var app = express();
-// var port_number = process.env.PORT || 3000;
-var port_number = 3000;
+var port_number = process.env.PORT || 3000;
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var bodyParser = require('body-parser');
@@ -64,10 +61,6 @@ io.on('task_acknowledged', function (socket) {
     console.log('I received a private message by ', from, ' saying ', msg);
 });
 app.post('/rest/tasks/new', function(req, res) {
-    /*
-    res.end(JSON.stringify(req.body, null, 2))
-    return;
-    */
     var name = req.body.name;
     var description = req.body.description;
     var priority = req.body.priority;
