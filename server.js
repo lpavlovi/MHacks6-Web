@@ -8,10 +8,8 @@ var port_number = process.env.PORT || 3000;
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
 var bodyParser = require('body-parser');
-var url = 'mongodb://localhost:27017/task_database';
-
+var url = 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s';
 var clients = [];
-// mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s
 mongo_client.connect(url, function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -31,7 +29,7 @@ app.set('port', port_number);
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
 var serve = http.listen((port_number), function() {
-  console.log('Port: %s', serve.address().port);
+  console.log('mHacks - Port: %s', serve.address().port);
 });
 
 io.listen(serve);
