@@ -1,7 +1,7 @@
 {
   "name": "MHacks6-Project",
   "version": "1.2.7",
-  "description": "Testing out requirejs along with angularjs",
+  "description": "having fun at MHacks",
   "dependencies": {
     "bower": "^1.4.0",
     "express": "^4.10.2",

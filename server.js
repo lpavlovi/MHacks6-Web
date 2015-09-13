@@ -9,9 +9,9 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
-var url = 'mongodb://localhost:27017/task_database';
+var url = 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s';
 var clients = [];
-
+// mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s
 mongo_client.connect(url, function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
