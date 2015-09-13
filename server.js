@@ -60,6 +60,25 @@ io.on('task_acknowledged', function (socket) {
     });
     console.log('I received a private message by ', from, ' saying ', msg);
 });
+
+app.get('/rest/tasks/list', function(req, res) {
+    mongo_client.connect(url, function (err, db) {
+        if (err) {
+            console.log('Unable to connect to the mongoDB server. Error:', err);
+        } else {
+            // Connection successful
+            var collection = db.collection('tasks');
+            var myCursor = collection.find();
+            console.log(myCursor);
+            res.send(myCursor);
+            res.end();
+            db.close();
+          });
+        }
+    });
+
+});
+
 app.post('/rest/tasks/new', function(req, res) {
     var name = req.body.name;
     var description = req.body.description;
