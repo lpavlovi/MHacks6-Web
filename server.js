@@ -32,7 +32,7 @@ var serve = http.listen((port_number), function() {
   console.log('mHacks - Port: %s', serve.address().port);
 });
 
-io.listen(80);
+io.listen(8080);
 
 app.on('connection', function(socket) {
     clients.push(socket);
