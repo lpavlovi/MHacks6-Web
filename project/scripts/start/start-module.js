@@ -1,6 +1,5 @@
 define([
   'angular',
-  'socket',
   'uiRouter',
   '../first-view/first-module',
   '../services/services-module'

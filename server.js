@@ -5,10 +5,9 @@ var io = require('socket.io')(http);
 var express = require('express');
 // var app = express();
 var port_number = process.env.PORT;
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
 var mongodb = require('mongodb');
 var mongo_client = mongodb.MongoClient;
+var bodyParser = require('body-parser');
 var url = 'mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s';
 var clients = [];
 // mongodb://heroku_76qjbg9s:qagia4sponi0jku2fhvkchl7vb@ds035428.mongolab.com:35428/heroku_76qjbg9s
@@ -23,13 +22,14 @@ mongo_client.connect(url, function (err, db) {
 });
 
 app.use('/', express.static(__dirname + '/project'));
+app.use(bodyParser.json())
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
 var serve = http.listen((port_number || 3000), function() {
   console.log('Port: %s', serve.address().port);
 });
 
-
+io.listen(serve);
 
 app.on('connection', function(socket) {
     clients.push(socket);
@@ -59,13 +59,17 @@ io.on('task_acknowledged', function (socket) {
 });
 
 app.post('/rest/tasks/new', function(req, res) {
+    /*
+    res.end(JSON.stringify(req.body, null, 2))
+    return;
+    */
     var name = req.body.name;
     var description = req.body.description;
     var priority = req.body.priority;
     var msg = priority + '-' + name + '-' + description; 
     var randomClient;
     // send msg to 1 random client
-    if(client.length > 0) {
+    if(clients.length > 0) {
         randomClient = Math.floor(Math.random() * clients.length);
         clients[randomClient].emit('new_task', msg);
     }
