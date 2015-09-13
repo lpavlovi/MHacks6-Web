@@ -51,7 +51,8 @@ socket.on('task_acknowledged', function (from, msg) {
             var name = values[0];
             var description = values[1];
             var priority = values[2];
-            collection.remove({name: name, description: description, priority:priority}}); 
+            collection.remove({name: name, description: description, priority:priority});
+        }
     });
     console.log('I received a private message by ', from, ' saying ', msg);
 });
@@ -67,7 +68,6 @@ app.post('/rest/tasks/new', function(req, res) {
         randomClient = Math.floor(Math.random() * clients.length);
         clients[randomClient].emit('new_task', msg);
     }
-    res.send(msg);
     mongo_client.connect(url, function (err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -82,9 +82,10 @@ app.post('/rest/tasks/new', function(req, res) {
                     console.log("new task inserted!");
                 }
                 db.close();
-            }
+            });
+        }
     });
-
+    res.send(msg);
 });
 
 io.on('connection', function(socket){
